@@ -1,10 +1,11 @@
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then return end
 
 local addonName, addon = ...
-local thisCharacterCooldowns
+local thisCharacter
 
+local DataStore = DataStore
 local TableInsert, TableRemove, format, strfind, gsub, select, tonumber = table.insert, table.remove, format, strfind, gsub, select, tonumber
-local GetItemInfo, GetGameTime, C_DateAndTime, time, difftime, strsplit = GetItemInfo, GetGameTime, C_DateAndTime, time, difftime, strsplit
+local GetItemInfo, GetGameTime, C_DateAndTime, C_Timer, time, difftime, strsplit = GetItemInfo, GetGameTime, C_DateAndTime, C_Timer, time, difftime, strsplit
 
 local trackedItems = {
 	[39878] = 259200, -- Mysterious Egg, 3 days
@@ -27,8 +28,8 @@ local function OnChatMsgLoot(event, arg)
 		if itemID == id then
 			local name = GetItemInfo(itemID)
 			if name then
-				TableInsert(thisCharacterCooldowns, format("%s|%s|%s", name, time(), duration))
-				addon:SendMessage("DATASTORE_ITEM_COOLDOWN_UPDATED", itemID)
+				TableInsert(thisCharacter, format("%s|%s|%s", name, time(), duration))
+				DataStore:Broadcast("DATASTORE_ITEM_COOLDOWN_UPDATED", itemID)
 			end
 		end
 	end
@@ -55,7 +56,6 @@ local function _GetClientServerTimeGap()
 	return clientServerTimeGap or 0
 end
 
-local timerHandle
 local timeTable = {}	-- to pass as an argument to time()	see http://lua-users.org/wiki/OsLibraryTutorial for details
 local lastServerMinute
 
@@ -68,13 +68,13 @@ local function SetClientServerTimeGap()
 		return
 	end
 
-	if lastServerMinute == serverMinute then return end	-- minute hasn't changed yet, exit
+	if lastServerMinute == serverMinute then			-- minute hasn't changed yet, exit
+		C_Timer.After(1, SetClientServerTimeGap)		-- reschedule the timer for the next second
+		return 												
+	end	
 
 	-- next minute ? do our stuff and stop
-	addon:CancelTimer(timerHandle)
-
 	lastServerMinute = nil	-- won't be needed anymore
-	timerHandle = nil
 
 	local info = C_DateAndTime.GetCurrentCalendarTime()
 	
@@ -88,11 +88,12 @@ local function SetClientServerTimeGap()
 	-- our goal is achieved, we can calculate the difference between server time and local time, in seconds.
 	clientServerTimeGap = difftime(time(timeTable), time())
 
-	addon:SendMessage("DATASTORE_CS_TIMEGAP_FOUND", clientServerTimeGap)
+	DataStore:Broadcast("DATASTORE_CS_TIMEGAP_FOUND", clientServerTimeGap)
 end
 
 DataStore:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
+		addon = addon,
 		characterTables = {
 			["DataStore_Agenda_ItemCooldowns"] = {
 				-- *** Retail only ***
@@ -117,11 +118,11 @@ DataStore:OnAddonLoaded(addonName, function()
 
 	DataStore:RegisterMethod(addon, "GetClientServerTimeGap", _GetClientServerTimeGap)
 
-	thisCharacterCooldowns = DataStore:GetCharacterDB("DataStore_Agenda_ItemCooldowns")
+	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_ItemCooldowns")
 end)
 
 DataStore:OnPlayerLogin(function()
 	addon:ListenTo("CHAT_MSG_LOOT", OnChatMsgLoot)
 	
-	timerHandle = addon:ScheduleRepeatingTimer(SetClientServerTimeGap, 1)
+	C_Timer.After(1, SetClientServerTimeGap)
 end)

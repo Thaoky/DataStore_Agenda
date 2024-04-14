@@ -1,4 +1,5 @@
 local addonName, addon = ...
+local thisCharacter
 local thisCharacterDungeons
 local thisCharacterBossKills
 
@@ -7,6 +8,7 @@ local GetNumSavedInstances, GetSavedInstanceInfo, GetSavedInstanceEncounterInfo 
 local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 
 local function ScanDungeonIDs()
+	-- Save nothing if there is no data
 	thisCharacterDungeons = nil
 	thisCharacterBossKills = nil
 
@@ -42,7 +44,7 @@ local function ScanDungeonIDs()
 	end
 	
 	thisCharacter.lastUpdate = time()
-	addon:SendMessage("DATASTORE_DUNGEON_IDS_SCANNED")
+	DataStore:Broadcast("DATASTORE_DUNGEON_IDS_SCANNED")
 end
 
 local function OnBossKill(event, encounterID, encounterName)
@@ -78,6 +80,7 @@ end
 
 DataStore:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
+		addon = addon,
 		characterTables = {
 			["DataStore_Agenda_SavedInstances"] = {
 					--[[	Typical usage:
@@ -109,6 +112,7 @@ DataStore:OnAddonLoaded(addonName, function()
 		}
 	})
 
+	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_Characters")
 	thisCharacterDungeons = DataStore:GetCharacterDB("DataStore_Agenda_SavedInstances")
 	thisCharacterBossKills = DataStore:GetCharacterDB("DataStore_Agenda_BossKills")
 end)

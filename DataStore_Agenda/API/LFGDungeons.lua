@@ -1,7 +1,7 @@
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then return end
 
 local addonName, addon = ...
-local thisCharacterLFGDungeons
+local thisCharacter
 
 local GetLFGDungeonInfo, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, format = GetLFGDungeonInfo, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, format
 
@@ -30,8 +30,8 @@ local function ScanLFGDungeon(dungeonID)
 	local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID)
 	if not numCompleted or numCompleted == 0 then return end		-- no kills ? exit
 
-	thisCharacterLFGDungeons = thisCharacterLFGDungeons or {}
-	local dungeons = thisCharacterLFGDungeons
+	thisCharacter = thisCharacter or {}
+
 	local count = 0
 	local key
 	
@@ -40,22 +40,21 @@ local function ScanLFGDungeon(dungeonID)
 
 		key = format("%s.%s", dungeonID, bossName)
 		if isKilled then
-			dungeons[key] = true
+			thisCharacter[key] = true
 			count = count + 1
 		else
-			dungeons[key] = nil
+			thisCharacter[key] = nil
 		end
 	end
 
 	-- save how many we have killed in that dungeon
 	if count > 0 then
-		dungeons[format("%s.Count", dungeonID)] = count
+		thisCharacter[format("%s.Count", dungeonID)] = count
 	end
 end
 
 local function ScanLFGDungeons()
-	local dungeons = thisCharacterLFGDungeons
-	if dungeons then wipe(dungeons) end
+	if thisCharacter then wipe(thisCharacter) end
 	
 	for i = 1, 3000 do
 		ScanLFGDungeon(i)
@@ -79,13 +78,13 @@ DataStore:OnAddonLoaded(addonName, function()
 		}
 	})
 
-	thisCharacterLFGDungeons = DataStore:GetCharacterDB("DataStore_Agenda_LFGDungeons")
+	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_LFGDungeons")
 end)
 
 DataStore:OnPlayerLogin(function()
 	addon:ListenTo("LFG_UPDATE_RANDOM_INFO", ScanLFGDungeons)
 	addon:ListenTo("ENCOUNTER_END", function(event, dungeonID, name, difficulty, raidSize, endStatus)
 		ScanLFGDungeon(dungeonID)
-		addon:SendMessage("DATASTORE_DUNGEON_SCANNED")
+		DataStore:Broadcast("DATASTORE_DUNGEON_SCANNED")
 	end)
 end)

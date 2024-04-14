@@ -6,7 +6,7 @@ This file manages the cleanup of expired dungeons
 --]]
 
 local options
-local tonumber, GetCVar = tonumber, GetCVar
+local format, tonumber, date, GetCVar = format, tonumber, date, GetCVar
 
 local daysPerMonth = { 31,28,31,30,31,30,31,31,30,31,30,31 }
 

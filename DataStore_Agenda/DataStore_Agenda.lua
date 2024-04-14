@@ -7,8 +7,8 @@ if not DataStore then return end
 local addonName, addon = ...
 local thisCharacter
 
-local TableInsert, TableRemove, format = table.insert, table.remove, format
-local C_Calendar, C_DateAndTime = C_Calendar, C_DateAndTime
+local TableInsert, TableRemove, format, strsplit = table.insert, table.remove, format, strsplit
+local C_Calendar, C_DateAndTime, time, date = C_Calendar, C_DateAndTime, time, date
 
 local function ScanCalendar()
 	-- Save the current month
@@ -59,7 +59,7 @@ local function ScanCalendar()
 	-- Restore current month
 	C_Calendar.SetAbsMonth(currentMonthInfo.month, currentMonthInfo.year)
 
-	addon:SendMessage("DATASTORE_CALENDAR_SCANNED")
+	DataStore:Broadcast("DATASTORE_CALENDAR_SCANNED")
 	char.lastUpdate = time()
 end
 
@@ -80,8 +80,8 @@ local function _GetCalendarEventInfo(character, index)
 	end
 end
 
-DataStore:OnAddonLoaded(addonName, function() 
-	DataStore:RegisterNewModule({
+DataStore:OnAddonLoaded(addonName, function()
+	DataStore:RegisterModule({
 		addon = addon,
 		addonName = addonName,
 		rawTables = {
