@@ -25,7 +25,8 @@ local function ScanCalendar()
 	local now = date("%H:%M")
 
 	-- Save this month (from today) + 6 following months
-	for monthOffset = 0, 6 do
+	-- for monthOffset = 0, 6 do
+	for monthOffset = 0, 0 do
 		local charMonthInfo = C_Calendar.GetMonthInfo(monthOffset)
 		local month, year, numDays = charMonthInfo.month, charMonthInfo.year, charMonthInfo.numDays
 		local startDay = (monthOffset == 0) and dateInfo.monthDay or 1
@@ -80,6 +81,7 @@ local function _GetCalendarEventInfo(character, index)
 	end
 end
 
+
 DataStore:OnAddonLoaded(addonName, function()
 	DataStore:RegisterModule({
 		addon = addon,
@@ -117,11 +119,12 @@ DataStore:OnAddonLoaded(addonName, function()
 	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_Characters", true)
 end)
 
+DataStore:OnAddonLoaded("Blizzard_Calendar", function()
+	addon:ListenTo("CALENDAR_UPDATE_EVENT_LIST", OnCalendarUpdateEventList)
+end)
+
 DataStore:OnPlayerLogin(function()
-	
 	-- Only register after setting the current month !
 	local info = C_DateAndTime.GetCurrentCalendarTime()
 	C_Calendar.SetAbsMonth(info.month, info.year)
-	
-	addon:ListenTo("CALENDAR_UPDATE_EVENT_LIST", OnCalendarUpdateEventList)
 end)

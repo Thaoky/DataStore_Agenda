@@ -2,8 +2,12 @@ if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then return end
 
 local addonName, addon = ...
 local thisCharacter
+local dungeons
 
+local DataStore = DataStore
 local GetLFGDungeonInfo, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, format = GetLFGDungeonInfo, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, format
+
+local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 
 local function ScanLFGDungeon(dungeonID)
    -- name, typeId, subTypeID, 
@@ -30,8 +34,7 @@ local function ScanLFGDungeon(dungeonID)
 	local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID)
 	if not numCompleted or numCompleted == 0 then return end		-- no kills ? exit
 
-	thisCharacter = thisCharacter or {}
-
+	local info = {}
 	local count = 0
 	local key
 	
@@ -40,16 +43,17 @@ local function ScanLFGDungeon(dungeonID)
 
 		key = format("%s.%s", dungeonID, bossName)
 		if isKilled then
-			thisCharacter[key] = true
+			info[key] = true
 			count = count + 1
 		else
-			thisCharacter[key] = nil
+			info[key] = nil
 		end
 	end
 
 	-- save how many we have killed in that dungeon
 	if count > 0 then
-		thisCharacter[format("%s.Count", dungeonID)] = count
+		info[format("%s.Count", dungeonID)] = count
+		dungeons[DataStore.ThisCharID] = info
 	end
 end
 
@@ -63,22 +67,28 @@ end
 
 DataStore:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
-		characterTables = {
+		addon = addon,
+		characterIdTables = {
 			["DataStore_Agenda_LFGDungeons"] = {
 				-- *** Retail only ***
-				IsBossAlreadyLooted = isRetail and function(character, dungeonID, boss)
-					local key = format("%s.%s", dungeonID, boss)
-					return character[key]
+				IsBossAlreadyLooted = isRetail and function(characterID, dungeonID, boss)
+					if dungeons[characterID] then
+						local key = format("%s.%s", dungeonID, boss)
+						return dungeons[characterID][key]
+					end
 				end,
-				GetLFGDungeonKillCount = isRetail and function(character, dungeonID)
+				GetLFGDungeonKillCount = isRetail and function(characterID, dungeonID)
+					if not dungeons[characterID] then return 0 end
+					
 					local key = format("%s.Count", dungeonID)
-					return character[key] or 0
+					return dungeons[characterID][key] or 0
 				end,
 			},
 		}
 	})
 
-	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_LFGDungeons")
+	dungeons = DataStore_Agenda_LFGDungeons
+	-- thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_LFGDungeons")
 end)
 
 DataStore:OnPlayerLogin(function()
