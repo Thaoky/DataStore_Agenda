@@ -3,13 +3,22 @@ local thisCharacter
 local thisCharacterDungeons
 local thisCharacterBossKills
 
+local dungeons
+
 local TableInsert, format, strsplit, tonumber = table.insert, format, strsplit, tonumber
 local GetNumSavedInstances, GetSavedInstanceInfo, GetSavedInstanceEncounterInfo = GetNumSavedInstances, GetSavedInstanceInfo, GetSavedInstanceEncounterInfo
 local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 
+local function InsertSavedInstance(key, value)
+	local charID = DataStore.ThisCharID
+	dungeons[charID] = dungeons[charID] or {}
+
+	dungeons[charID][key] = value
+end
+
+
 local function ScanDungeonIDs()
 	-- Save nothing if there is no data
-	thisCharacterDungeons = nil
 	thisCharacterBossKills = nil
 
 	for i = 1, GetNumSavedInstances() do
@@ -24,8 +33,8 @@ local function ScanDungeonIDs()
 			end
 
 			local key = format("%s|%s", instanceName, instanceID)
-			thisCharacterDungeons = thisCharacterDungeons or {}
-			thisCharacterDungeons[key] = format("%s|%s|%s|%s", instanceReset, time(), extended, isRaid)
+
+			InsertSavedInstance(key, format("%s|%s|%s|%s", instanceReset, time(), extended, isRaid))
 
 			-- Vanilla & LK
 			if not isRetail then
@@ -54,8 +63,11 @@ local function OnBossKill(event, encounterID, encounterName)
 	-- print("encounterName:" .. (encounterName or "nil"))
 end
 
-local function _GetSavedInstanceInfo(character, key)
-	local instanceInfo = character[key]
+local function _GetSavedInstanceInfo(characterID, key)
+	local char = dungeons[characterID]
+	if not char then return end
+	
+	local instanceInfo = char[key]
 	if not instanceInfo then return end
 
 	local hasExpired
@@ -78,10 +90,17 @@ local function _HasSavedInstanceExpired(character, key)
 	return hasExpired, expiresIn
 end
 
+local function _DeleteSavedInstance(characterID, key)
+	local char = dungeons[characterID]
+	if char then
+		char[key] = nil
+	end
+end
+
 DataStore:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
 		addon = addon,
-		characterTables = {
+		characterIdTables = {
 			["DataStore_Agenda_SavedInstances"] = {
 					--[[	Typical usage:
 
@@ -89,13 +108,13 @@ DataStore:OnAddonLoaded(addonName, function()
 							myvar1, myvar2, .. = DataStore:GetSavedInstanceInfo(character, dungeonKey)
 						end
 					--]]
-				GetSavedInstances = function(character) return character end,
+				GetSavedInstances = function(characterID) return dungeons[characterID] end,
 				GetSavedInstanceInfo = _GetSavedInstanceInfo,
 				HasSavedInstanceExpired = _HasSavedInstanceExpired,
-				DeleteSavedInstance = function(character, key)
-					character[key] = nil
-				end,
+				DeleteSavedInstance = _DeleteSavedInstance,
 			},
+		},
+		characterTables = {
 			["DataStore_Agenda_BossKills"] = {
 				-- *** Vanilla & LK only ***
 				GetSavedInstanceNumEncounters = (not isRetail) and function(character, key)
@@ -113,7 +132,7 @@ DataStore:OnAddonLoaded(addonName, function()
 	})
 
 	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_Characters")
-	thisCharacterDungeons = DataStore:GetCharacterDB("DataStore_Agenda_SavedInstances")
+	dungeons = DataStore_Agenda_SavedInstances
 	thisCharacterBossKills = DataStore:GetCharacterDB("DataStore_Agenda_BossKills")
 end)
 

@@ -100,7 +100,9 @@ DataStore:OnPlayerLogin(function()
 	if (today == nextReset) and (tonumber(date("%H")) < options.WeeklyResetHour) then return end
 	
 	-- at this point, we may reset
-	wipe(DataStore_Agenda_LFGDungeons)
+	if DataStore_Agenda_LFGDungeons then
+		wipe(DataStore_Agenda_LFGDungeons)
+	end
 	
 	-- finally, set the next reset day
 	options.NextWeeklyReset = GetNextWeeklyReset(weeklyResetDay)

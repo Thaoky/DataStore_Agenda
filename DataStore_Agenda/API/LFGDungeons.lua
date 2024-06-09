@@ -1,4 +1,4 @@
-if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then return end
+ if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then return end
 
 local addonName, addon = ...
 local thisCharacter
@@ -88,7 +88,6 @@ DataStore:OnAddonLoaded(addonName, function()
 	})
 
 	dungeons = DataStore_Agenda_LFGDungeons
-	-- thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_LFGDungeons")
 end)
 
 DataStore:OnPlayerLogin(function()
