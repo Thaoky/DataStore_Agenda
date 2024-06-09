@@ -18,7 +18,6 @@ end
 
 
 local function ScanDungeonIDs()
-	print("scanning dungeon id's")
 	-- Save nothing if there is no data
 	thisCharacterBossKills = nil
 
