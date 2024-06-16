@@ -65,6 +65,7 @@ local function SetClientServerTimeGap()
 
 	if not lastServerMinute then		-- serverMinute not set ? this is the first pass, save it
 		lastServerMinute = serverMinute
+		C_Timer.After(1, SetClientServerTimeGap)		-- reschedule the timer for the next second
 		return
 	end
 
