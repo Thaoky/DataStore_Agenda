@@ -1,10 +1,10 @@
-## Interface: 110000, 40400, 11502
+## Interface: 110002, 40400, 11502
 ## Title: DataStore_Agenda
 ## IconTexture: Interface\Icons\garrison_building_storehouse
 
 ## Notes: Stores information about a character's friends, calendar, notes, etc..
 ## Author: Thaoky (EU-Marécages de Zangar)
-## Version: 2024.07.28
+## Version: 2024.08.14
 ## Dependencies: DataStore
 ## SavedVariables: DataStore_Agenda_Characters, DataStore_Agenda_SavedInstances, DataStore_Agenda_BossKills, DataStore_Agenda_LFGDungeons, DataStore_Agenda_ItemCooldowns, DataStore_Agenda_Contacts, DataStore_Agenda_Options
 ## X-Category: Interface Enhancements
