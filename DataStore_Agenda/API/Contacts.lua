@@ -24,7 +24,7 @@ local function ScanContacts()
 	end
 end
 
-DataStore:OnAddonLoaded(addonName, function() 
+AddonFactory:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
 		rawTables = {
 			"DataStore_Agenda_Contacts"
@@ -42,7 +42,7 @@ DataStore:OnAddonLoaded(addonName, function()
 	contacts = DataStore_Agenda_Contacts
 end)
 
-DataStore:OnPlayerLogin(function()
+AddonFactory:OnPlayerLogin(function()
 	addon:ListenTo("PLAYER_ALIVE", ScanContacts)
 	addon:ListenTo("FRIENDLIST_UPDATE", ScanContacts)
 end)

@@ -82,7 +82,7 @@ local function _GetCalendarEventInfo(character, index)
 end
 
 
-DataStore:OnAddonLoaded(addonName, function()
+AddonFactory:OnAddonLoaded(addonName, function()
 	DataStore:RegisterModule({
 		addon = addon,
 		addonName = addonName,
@@ -119,11 +119,11 @@ DataStore:OnAddonLoaded(addonName, function()
 	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_Characters", true)
 end)
 
-DataStore:OnAddonLoaded("Blizzard_Calendar", function()
+AddonFactory:OnAddonLoaded("Blizzard_Calendar", function()
 	addon:ListenTo("CALENDAR_UPDATE_EVENT_LIST", OnCalendarUpdateEventList)
 end)
 
-DataStore:OnPlayerLogin(function()
+AddonFactory:OnPlayerLogin(function()
 	-- Only register after setting the current month !
 	local info = C_DateAndTime.GetCurrentCalendarTime()
 	C_Calendar.SetAbsMonth(info.month, info.year)

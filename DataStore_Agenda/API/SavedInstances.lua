@@ -97,7 +97,7 @@ local function _DeleteSavedInstance(characterID, key)
 	end
 end
 
-DataStore:OnAddonLoaded(addonName, function() 
+AddonFactory:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
 		addon = addon,
 		characterIdTables = {
@@ -136,7 +136,7 @@ DataStore:OnAddonLoaded(addonName, function()
 	thisCharacterBossKills = DataStore:GetCharacterDB("DataStore_Agenda_BossKills")
 end)
 
-DataStore:OnPlayerLogin(function()
+AddonFactory:OnPlayerLogin(function()
 
 	if not isRetail then
 		addon:ListenTo("PLAYER_ALIVE", ScanDungeonIDs)

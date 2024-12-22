@@ -73,7 +73,7 @@ local function InitializeWeeklyParameters()
 	options.NextWeeklyReset = GetNextWeeklyReset(weeklyResetDay)
 end
 
-DataStore:OnPlayerLogin(function()
+AddonFactory:OnPlayerLogin(function()
 	-- Clear expired dungeons
 	options = DataStore_Agenda_Options
 

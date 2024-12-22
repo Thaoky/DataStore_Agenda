@@ -92,7 +92,7 @@ local function SetClientServerTimeGap()
 	DataStore:Broadcast("DATASTORE_CS_TIMEGAP_FOUND", clientServerTimeGap)
 end
 
-DataStore:OnAddonLoaded(addonName, function() 
+AddonFactory:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
 		addon = addon,
 		characterTables = {
@@ -122,7 +122,7 @@ DataStore:OnAddonLoaded(addonName, function()
 	thisCharacter = DataStore:GetCharacterDB("DataStore_Agenda_ItemCooldowns")
 end)
 
-DataStore:OnPlayerLogin(function()
+AddonFactory:OnPlayerLogin(function()
 	addon:ListenTo("CHAT_MSG_LOOT", OnChatMsgLoot)
 	
 	C_Timer.After(1, SetClientServerTimeGap)

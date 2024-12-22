@@ -65,7 +65,7 @@ local function ScanLFGDungeons()
 	end
 end
 
-DataStore:OnAddonLoaded(addonName, function() 
+AddonFactory:OnAddonLoaded(addonName, function() 
 	DataStore:RegisterTables({
 		addon = addon,
 		characterIdTables = {
@@ -90,7 +90,7 @@ DataStore:OnAddonLoaded(addonName, function()
 	dungeons = DataStore_Agenda_LFGDungeons
 end)
 
-DataStore:OnPlayerLogin(function()
+AddonFactory:OnPlayerLogin(function()
 	addon:ListenTo("LFG_UPDATE_RANDOM_INFO", ScanLFGDungeons)
 	addon:ListenTo("ENCOUNTER_END", function(event, dungeonID, name, difficulty, raidSize, endStatus)
 		ScanLFGDungeon(dungeonID)
