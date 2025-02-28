@@ -29,7 +29,7 @@ local function OnChatMsgLoot(event, arg)
 			local name = GetItemInfo(itemID)
 			if name then
 				TableInsert(thisCharacter, format("%s|%s|%s", name, time(), duration))
-				DataStore:Broadcast("DATASTORE_ITEM_COOLDOWN_UPDATED", itemID)
+				AddonFactory:Broadcast("DATASTORE_ITEM_COOLDOWN_UPDATED", itemID)
 			end
 		end
 	end
@@ -89,7 +89,7 @@ local function SetClientServerTimeGap()
 	-- our goal is achieved, we can calculate the difference between server time and local time, in seconds.
 	clientServerTimeGap = difftime(time(timeTable), time())
 
-	DataStore:Broadcast("DATASTORE_CS_TIMEGAP_FOUND", clientServerTimeGap)
+	AddonFactory:Broadcast("DATASTORE_CS_TIMEGAP_FOUND", clientServerTimeGap)
 end
 
 AddonFactory:OnAddonLoaded(addonName, function() 

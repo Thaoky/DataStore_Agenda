@@ -60,7 +60,7 @@ local function ScanCalendar()
 	-- Restore current month
 	C_Calendar.SetAbsMonth(currentMonthInfo.month, currentMonthInfo.year)
 
-	DataStore:Broadcast("DATASTORE_CALENDAR_SCANNED")
+	AddonFactory:Broadcast("DATASTORE_CALENDAR_SCANNED")
 	char.lastUpdate = time()
 end
 

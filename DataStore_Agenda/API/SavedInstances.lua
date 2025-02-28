@@ -53,7 +53,7 @@ local function ScanDungeonIDs()
 	end
 	
 	thisCharacter.lastUpdate = time()
-	DataStore:Broadcast("DATASTORE_DUNGEON_IDS_SCANNED")
+	AddonFactory:Broadcast("DATASTORE_DUNGEON_IDS_SCANNED")
 end
 
 local function OnBossKill(event, encounterID, encounterName)
