@@ -4,7 +4,7 @@
 
 ## Notes: Stores information about a character's friends, calendar, notes, etc..
 ## Author: Thaoky (EU-Marécages de Zangar)
-## Version: 2025.08.21
+## Version: 2025.08.22
 ## Dependencies: AddonFactory, DataStore
 ## SavedVariables: DataStore_Agenda_Characters, DataStore_Agenda_SavedInstances, DataStore_Agenda_BossKills, DataStore_Agenda_LFGDungeons, DataStore_Agenda_ItemCooldowns, DataStore_Agenda_Contacts, DataStore_Agenda_Options
 ## X-Category: Interface Enhancements
