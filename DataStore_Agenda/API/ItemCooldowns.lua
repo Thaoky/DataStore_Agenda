@@ -1,4 +1,4 @@
-if LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_WRATH_OF_THE_LICH_KING then return end
+if LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_BURNING_CRUSADE then return end
 
 local addonName, addon = ...
 local thisCharacter
