@@ -1,4 +1,4 @@
-## Interface: 110205, 50501, 11507
+## Interface: 120000, 50501, 11507
 ## Title: DataStore_Agenda
 ## IconTexture: Interface\Icons\garrison_building_storehouse
 
@@ -8,6 +8,18 @@
 ## Dependencies: AddonFactory, DataStore
 ## SavedVariables: DataStore_Agenda_Characters, DataStore_Agenda_SavedInstances, DataStore_Agenda_BossKills, DataStore_Agenda_LFGDungeons, DataStore_Agenda_ItemCooldowns, DataStore_Agenda_Contacts, DataStore_Agenda_Options
 ## X-Category: Interface Enhancements
+
+## Category: Libraries
+## Category-deDE: Bibliotheken
+## Category-esES: Bibliotecas
+## Category-esMX: Bibliotecas
+## Category-frFR: Bibliothèques
+## Category-itIT: Librerie
+## Category-koKR: 라이브러리
+## Category-ptBR: Bibliotecas
+## Category-ruRU: Библиотеки
+## Category-zhCN: 函数库
+## Category-zhTW: 函式庫
 
 DataStore_Agenda.lua
 API\ItemCooldowns.lua
