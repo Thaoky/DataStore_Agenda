@@ -18,8 +18,14 @@ local lootMsg = gsub(LOOT_ITEM_SELF, "%%s", "(.+)")
 local purchaseMsg = gsub(LOOT_ITEM_PUSHED_SELF, "%%s", "(.+)")
 
 local function OnChatMsgLoot(event, arg)
-	local link = select(3, strfind(arg, lootMsg)) or select(3, strfind(arg, purchaseMsg))
-	if not link then return end
+	-- In WoW 12.0+, CHAT_MSG_LOOT arg may be a secret string; strfind on it
+	-- raises "attempt to perform string conversion on a secret string value"
+	-- and aborts the AddonFactory callback. Wrap in pcall and drop the event
+	-- if it's tainted - tracked-item cooldowns are best-effort.
+	local ok, link = pcall(function()
+		return select(3, strfind(arg, lootMsg)) or select(3, strfind(arg, purchaseMsg))
+	end)
+	if not ok or not link then return end
 
 	local id = tonumber(link:match("item:(%d+)"))
 	if not id then return end
