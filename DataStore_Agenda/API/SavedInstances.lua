@@ -146,7 +146,11 @@ AddonFactory:OnPlayerLogin(function()
 	addon:ListenTo("UPDATE_INSTANCE_INFO", ScanDungeonIDs)
 	addon:ListenTo("RAID_INSTANCE_WELCOME", function()	RequestRaidInfo() end)
 	addon:ListenTo("CHAT_MSG_SYSTEM", function(event, arg)
-		if arg and tostring(arg) == INSTANCE_SAVED then
+		-- In WoW 12.0+, CHAT_MSG_SYSTEM args may be secret strings that taint
+		-- comparison/tostring. Wrap in pcall so non-INSTANCE_SAVED messages
+		-- don't blow up the AddonFactory callback.
+		local ok, isMatch = pcall(function() return arg and tostring(arg) == INSTANCE_SAVED end)
+		if ok and isMatch then
 			RequestRaidInfo()
 		end
 	end)
