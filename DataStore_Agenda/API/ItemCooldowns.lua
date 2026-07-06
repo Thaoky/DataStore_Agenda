@@ -1,5 +1,3 @@
-if LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_BURNING_CRUSADE then return end
-
 local addonName, addon = ...
 local thisCharacter
 
