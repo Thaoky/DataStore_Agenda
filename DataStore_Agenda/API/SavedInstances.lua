@@ -146,6 +146,8 @@ AddonFactory:OnPlayerLogin(function()
 	addon:ListenTo("UPDATE_INSTANCE_INFO", ScanDungeonIDs)
 	addon:ListenTo("RAID_INSTANCE_WELCOME", function()	RequestRaidInfo() end)
 	addon:ListenTo("CHAT_MSG_SYSTEM", function(event, arg)
+		-- Remove secret value error
+		if canaccessvalue and not canaccessvalue(arg) then return end
 		if arg and tostring(arg) == INSTANCE_SAVED then
 			RequestRaidInfo()
 		end

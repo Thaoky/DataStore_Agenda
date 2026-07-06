@@ -1,5 +1,3 @@
-if LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_WRATH_OF_THE_LICH_KING then return end
-
 local addonName, addon = ...
 local thisCharacter
 
@@ -17,7 +15,11 @@ local trackedItems = {
 local lootMsg = gsub(LOOT_ITEM_SELF, "%%s", "(.+)")
 local purchaseMsg = gsub(LOOT_ITEM_PUSHED_SELF, "%%s", "(.+)")
 
+-- Maybe use ITEM_PURCHASED, LOOT_ITEM_ROLL_WON, or ITEM_COUNT_CHANGED events instead?
 local function OnChatMsgLoot(event, arg)
+	-- Remove secret value error
+	if canaccessvalue and not canaccessvalue(arg) then return end
+
 	local link = select(3, strfind(arg, lootMsg)) or select(3, strfind(arg, purchaseMsg))
 	if not link then return end
 

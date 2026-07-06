@@ -10,6 +10,8 @@ local thisCharacter
 local TableInsert, TableRemove, format, strsplit = table.insert, table.remove, format, strsplit
 local C_Calendar, C_DateAndTime, time, date = C_Calendar, C_DateAndTime, time, date
 
+local scanQueued = false
+
 local function ScanCalendar()
 	-- Save the current month
 	local currentMonthInfo = C_Calendar.GetMonthInfo()
@@ -34,7 +36,7 @@ local function ScanCalendar()
 		for day = startDay, numDays do
 			for i = 1, C_Calendar.GetNumDayEvents(monthOffset, day) do		-- number of events that day ..
 
-				-- http://www.wowwiki.com/API_CalendarGetDayEvent
+				-- https://warcraft.wiki.gg/wiki/API_C_Calendar.GetDayEvent
 				local info = C_Calendar.GetDayEvent(monthOffset, day, i)
 				local calendarType = info.calendarType
 				local inviteStatus = info.inviteStatus
@@ -62,16 +64,37 @@ local function ScanCalendar()
 
 	AddonFactory:Broadcast("DATASTORE_CALENDAR_SCANNED")
 	char.lastUpdate = time()
+	scanQueued = false
 end
 
 local function OnCalendarUpdateEventList()
 	-- The Calendar addon is LoD, and most functions return nil if the calendar is not loaded, so unless the CalendarFrame is valid, exit right away
 	if not CalendarFrame then return end
 
+	-- If Blizzard has restricted some actions, delay the scan
+	-- May need to check ALL enum types, but Map is our first issue
+	if C_RestrictedActions and C_RestrictedActions.IsAddOnRestrictionActive(Enum.AddOnRestrictionType.Map) then
+		scanQueued = true
+		return
+	end
+
 	-- prevent CalendarSetAbsMonth from triggering a scan (= avoid infinite loop)
 	addon:StopListeningTo("CALENDAR_UPDATE_EVENT_LIST")
 	ScanCalendar()
 	addon:ListenTo("CALENDAR_UPDATE_EVENT_LIST", OnCalendarUpdateEventList)
+end
+
+local function RestrictionChanged(event, type, state)
+	if scanQueued and state == Enum.AddOnRestrictionState.Inactive then
+		ScanCalendar()
+	end
+	--[[
+	if state ~= Enum.AddOnRestrictionState.Inactive then
+		print("Calendar scans will be queued")
+	else
+		print("Calendar scans will not be queued")
+	end
+	--]]
 end
 
 local function _GetCalendarEventInfo(character, index)
@@ -120,6 +143,7 @@ AddonFactory:OnAddonLoaded(addonName, function()
 end)
 
 AddonFactory:OnAddonLoaded("Blizzard_Calendar", function()
+	addon:ListenTo("ADDON_RESTRICTION_STATE_CHANGED", RestrictionChanged)
 	addon:ListenTo("CALENDAR_UPDATE_EVENT_LIST", OnCalendarUpdateEventList)
 end)
 
