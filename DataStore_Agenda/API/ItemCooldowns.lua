@@ -3,7 +3,7 @@ local thisCharacter
 
 local DataStore = DataStore
 local TableInsert, TableRemove, format, strfind, gsub, select, tonumber = table.insert, table.remove, format, strfind, gsub, select, tonumber
-local GetItemInfo, GetGameTime, C_DateAndTime, C_Timer, time, difftime, strsplit = GetItemInfo, GetGameTime, C_DateAndTime, C_Timer, time, difftime, strsplit
+local C_Item, GetGameTime, C_DateAndTime, C_Timer, time, difftime, strsplit = C_Item, GetGameTime, C_DateAndTime, C_Timer, time, difftime, strsplit
 
 local trackedItems = {
 	[39878] = 259200, -- Mysterious Egg, 3 days
@@ -28,7 +28,7 @@ local function OnChatMsgLoot(event, arg)
 
 	for itemID, duration in pairs(trackedItems) do
 		if itemID == id then
-			local name = GetItemInfo(itemID)
+			local name = C_Item.GetItemInfo(itemID)
 			if name then
 				TableInsert(thisCharacter, format("%s|%s|%s", name, time(), duration))
 				AddonFactory:Broadcast("DATASTORE_ITEM_COOLDOWN_UPDATED", itemID)
