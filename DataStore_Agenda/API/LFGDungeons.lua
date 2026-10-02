@@ -1,4 +1,5 @@
- if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then return end
+local isRetail = AddonFactory.isRetail
+if not isRetail then return end
 
 local addonName, addon = ...
 local thisCharacter
@@ -7,7 +8,6 @@ local dungeons
 local DataStore = DataStore
 local GetLFGDungeonInfo, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, format = GetLFGDungeonInfo, GetLFGDungeonNumEncounters, GetLFGDungeonEncounterInfo, format
 
-local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 
 local function ScanLFGDungeon(dungeonID)
    -- name, typeId, subTypeID, 

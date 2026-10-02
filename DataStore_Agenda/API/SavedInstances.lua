@@ -7,7 +7,7 @@ local dungeons
 
 local TableInsert, format, strsplit, tonumber = table.insert, format, strsplit, tonumber
 local GetNumSavedInstances, GetSavedInstanceInfo, GetSavedInstanceEncounterInfo = GetNumSavedInstances, GetSavedInstanceInfo, GetSavedInstanceEncounterInfo
-local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
+local isRetail = AddonFactory.isRetail
 
 local function InsertSavedInstance(key, value)
 	local charID = DataStore.ThisCharID
